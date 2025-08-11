@@ -3,13 +3,8 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import 'register_screen.dart';
 
-// {
-// "phone": "+9198786756499",
-// "password": "Pass@1234"
-// }
-
-// +9189786756
-//Pass@987
+//+9898786756
+//Pass@1234
 
 class LoginScreen extends StatefulWidget {
   @override
