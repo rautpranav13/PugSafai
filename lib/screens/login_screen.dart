@@ -3,6 +3,14 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import 'register_screen.dart';
 
+// {
+// "phone": "+9198786756499",
+// "password": "Pass@1234"
+// }
+
+// +9189786756
+//Pass@987
+
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -16,6 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _login() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+      print("$_phone, $_password");
       try {
         await Provider.of<AuthProvider>(context, listen: false).login(_phone, _password);
       } catch (e) {

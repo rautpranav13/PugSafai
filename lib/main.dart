@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => AuthProvider(),
       child: MaterialApp(
-        title: 'Safai App',
+        title: 'Pug Safai',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
@@ -34,7 +34,7 @@ class AuthWrapper extends StatelessWidget {
         if (authProvider.user != null) {
           return HomeScreen();
         } else {
-          return LoginScreen();
+          return HomeScreen();
         }
       },
     );
