@@ -1,86 +1,99 @@
-// lib/models/cleaning_task.dart
-
 import 'dart:convert';
 
-/// Model representing a cleaning task (ongoing or completed).
+/// Model representing a cleaning task from API.
 class CleaningTask {
-  final String id; // unique id (use DateTime.now().millisecondsSinceEpoch.toString())
-  final String toiletName;
-  final DateTime startTime;
-  DateTime? endTime;
-
-  final List<String> beforePhotos; // file paths or remote URLs
-  final String beforeRemarks;
-
-  List<String> afterPhotos; // file paths or remote URLs (mutable)
-  String afterRemarks;
-
-  final double startLatitude;
-  final double startLongitude;
-
-  double? endLatitude;
-  double? endLongitude;
-
-  /// 'ongoing' or 'completed'
-  String status;
+  final String id;
+  final String name; // Person or cleaner's name
+  final String phone;
+  final String remarks;
+  final List<String> images; // General task images
+  final double latitude;
+  final double longitude;
+  final String address;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final String siteId;
+  final String cleanerUserId;
+  final List<dynamic> taskId; // Could be List<String> or List<int> depending on API
+  final String? initialComment;
+  final String? finalComment;
+  final List<String> beforePhoto;
+  final List<String> afterPhoto;
+  final String status;
 
   CleaningTask({
     required this.id,
-    required this.toiletName,
-    required this.startTime,
-    this.endTime,
-    required this.beforePhotos,
-    required this.beforeRemarks,
-    this.afterPhotos = const [],
-    this.afterRemarks = '',
-    required this.startLatitude,
-    required this.startLongitude,
-    this.endLatitude,
-    this.endLongitude,
+    required this.name,
+    required this.phone,
+    required this.remarks,
+    required this.images,
+    required this.latitude,
+    required this.longitude,
+    required this.address,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.siteId,
+    required this.cleanerUserId,
+    required this.taskId,
+    this.initialComment,
+    this.finalComment,
+    required this.beforePhoto,
+    required this.afterPhoto,
     required this.status,
   });
 
-  /// Create a task from a Map (for storage / json)
+  /// Create a task from a Map (API JSON)
   factory CleaningTask.fromMap(Map<String, dynamic> map) {
     return CleaningTask(
-      id: map['id'] as String,
-      toiletName: map['toiletName'] as String,
-      startTime: DateTime.parse(map['startTime'] as String),
-      endTime: map['endTime'] != null ? DateTime.parse(map['endTime'] as String) : null,
-      beforePhotos: List<String>.from(map['beforePhotos'] ?? const []),
-      beforeRemarks: map['beforeRemarks'] as String? ?? '',
-      afterPhotos: List<String>.from(map['afterPhotos'] ?? const []),
-      afterRemarks: map['afterRemarks'] as String? ?? '',
-      startLatitude: (map['startLatitude'] as num).toDouble(),
-      startLongitude: (map['startLongitude'] as num).toDouble(),
-      endLatitude: map['endLatitude'] != null ? (map['endLatitude'] as num).toDouble() : null,
-      endLongitude: map['endLongitude'] != null ? (map['endLongitude'] as num).toDouble() : null,
-      status: map['status'] as String,
+      id: map['id']?.toString() ?? '',
+      name: map['name'] ?? '',
+      phone: map['phone'] ?? '',
+      remarks: map['remarks'] ?? '',
+      images: List<String>.from(map['images'] ?? const []),
+      latitude: (map['latitude'] as num?)?.toDouble() ?? 0.0,
+      longitude: (map['longitude'] as num?)?.toDouble() ?? 0.0,
+      address: map['address'] ?? '',
+      createdAt: DateTime.tryParse(map['created_at'] ?? '') ?? DateTime.now(),
+      updatedAt: DateTime.tryParse(map['updated_at'] ?? '') ?? DateTime.now(),
+      siteId: map['site_id']?.toString() ?? '',
+      cleanerUserId: map['cleaner_user_id']?.toString() ?? '',
+      taskId: map['task_id'] ?? [],
+      initialComment: map['initial_comment'],
+      finalComment: map['final_comment'],
+      beforePhoto: List<String>.from(map['before_photo'] ?? const []),
+      afterPhoto: List<String>.from(map['after_photo'] ?? const []),
+      status: map['status']?.trim() ?? '',
     );
   }
 
-  /// Convert to Map (for local storage / json)
+  /// Convert to Map (for local storage / sending to API)
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'toiletName': toiletName,
-      'startTime': startTime.toIso8601String(),
-      'endTime': endTime?.toIso8601String(),
-      'beforePhotos': beforePhotos,
-      'beforeRemarks': beforeRemarks,
-      'afterPhotos': afterPhotos,
-      'afterRemarks': afterRemarks,
-      'startLatitude': startLatitude,
-      'startLongitude': startLongitude,
-      'endLatitude': endLatitude,
-      'endLongitude': endLongitude,
+      'name': name,
+      'phone': phone,
+      'remarks': remarks,
+      'images': images,
+      'latitude': latitude,
+      'longitude': longitude,
+      'address': address,
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
+      'site_id': siteId,
+      'cleaner_user_id': cleanerUserId,
+      'task_id': taskId,
+      'initial_comment': initialComment,
+      'final_comment': finalComment,
+      'before_photo': beforePhoto,
+      'after_photo': afterPhoto,
       'status': status,
     };
   }
 
-  /// Convenience: JSON string
+  /// JSON serialization
   String toJson() => jsonEncode(toMap());
 
-  /// Convenience: from JSON string
-  factory CleaningTask.fromJson(String source) => CleaningTask.fromMap(jsonDecode(source));
+  /// JSON deserialization
+  factory CleaningTask.fromJson(String source) =>
+      CleaningTask.fromMap(jsonDecode(source));
 }
