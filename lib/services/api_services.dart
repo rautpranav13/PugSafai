@@ -12,6 +12,40 @@ class ApiService {
   static const String _baseUrl = 'https://safai-index-backend.onrender.com/api';
 
 
+  /// ---------------- REGISTER USER ----------------
+
+  static Future<Map<String, dynamic>> register(String name, String email, String phone, String password, int age) async {
+    final response = await http.post(
+      Uri.parse('$_baseUrl/register'),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "name": name,
+        "email": email,
+        "phone": phone,
+        "password": password,
+        "age": age,
+      }),
+    );
+    return jsonDecode(response.body);
+  }
+
+
+
+
+  /// ---------------- LOGIN USER ----------------
+
+  static Future<Map<String, dynamic>> login(String phone, String password) async {
+    final response = await http.post(
+      Uri.parse('$_baseUrl/login'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'phone': phone, 'password': password}),
+    );
+    return jsonDecode(response.body);
+  }
+
+
+
+
   /// --- GET LOCATIONS API ---
 
   static Future<List<Location>> getLocations() async {
@@ -37,7 +71,7 @@ class ApiService {
 
 
 
-  /// ----- Fetch Tasks for the User -----
+  /// ----- (Get cleaner-review) Fetch Tasks for the User -----
 
   static Future<List<CleaningTask>> _fetchTasks(String userId) async {
     final url = Uri.parse('$_baseUrl/cleaner-reviews/$userId');
@@ -82,38 +116,6 @@ class ApiService {
     }
   }
 
-
-
-  /// ---------------- REGISTER USER ----------------
-
-  static Future<Map<String, dynamic>> register(String name, String email, String phone, String password, int age) async {
-    final response = await http.post(
-      Uri.parse('$_baseUrl/register'),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({
-        "name": name,
-        "email": email,
-        "phone": phone,
-        "password": password,
-        "age": age,
-      }),
-    );
-    return jsonDecode(response.body);
-  }
-
-
-
-
-  /// ---------------- LOGIN USER ----------------
-
-  static Future<Map<String, dynamic>> login(String phone, String password) async {
-    final response = await http.post(
-      Uri.parse('$_baseUrl/login'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'phone': phone, 'password': password}),
-    );
-    return jsonDecode(response.body);
-  }
 
 
 
@@ -173,5 +175,65 @@ class ApiService {
       throw Exception('Error starting task: $e');
     }
   }
+
+
+
+
+  /// ---------------- PUT COMPLETED TASK ----------------
+
+
+  static Future<Map<String, dynamic>> putCompletedTask({
+    required BuildContext context,
+    required String taskId, // ID of task to update
+    required String finalComment,
+    required List<File> afterPhotos,
+  }) async {
+    try {
+      // Get logged-in user details
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final user = authProvider.user;
+      if (user == null) {
+        throw Exception("User not logged in");
+      }
+
+      // Instead of uploading files now, just mock the filenames like before
+      final afterPhotoList = [
+        "after-sample1.jpg",
+        "after-sample2.jpg"
+      ];
+
+      final uri = Uri.parse('$_baseUrl/cleaner-reviews/$taskId');
+
+      // Prepare update payload
+      final body = jsonEncode({
+        "updated_at": DateTime.now().toUtc().toIso8601String(),
+        "final_comment": finalComment,
+        "after_photo": afterPhotoList,
+        "status": "completed",
+      });
+
+      final response = await http.put(
+        uri,
+        headers: {"Content-Type": "application/json"},
+        body: body,
+      );
+
+      print("putCompletedTask response: ${response.body}");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return json.decode(response.body);
+      } else {
+        throw Exception(
+          'Failed to complete task. Status: ${response.statusCode} Body: ${response.body}',
+        );
+      }
+    } catch (e) {
+      print('Error in putCompletedTask: $e');
+      throw Exception('Error completing task: $e');
+    }
+  }
+
+
+
 
 }

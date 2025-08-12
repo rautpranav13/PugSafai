@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:pug_safai/screens/complete_task_screen.dart';
 import 'package:pug_safai/screens/dashboard_screen.dart';
 import 'providers/auth_provider.dart';
 import 'screens/login_screen.dart';
@@ -34,9 +35,9 @@ class AuthWrapper extends StatelessWidget {
     return Consumer<AuthProvider>(
       builder: (context, authProvider, child) {
         if (authProvider.user != null) {
-          return DashboardScreen();
+          return CompleteTaskScreen(taskId: '3',);
         } else {
-          return LoginScreen();
+          return CompleteTaskScreen(taskId: '3',);
         }
       },
     );

@@ -76,10 +76,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void _navigateToCompleteTaskScreen(String taskId) {
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(builder: (context) => CompleteTaskScreen(taskId: taskId)),
-    // ).then((_) => _fetchData());
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CompleteTaskScreen(taskId: taskId)),
+    ).then((_) => _fetchData());
   }
 
   @override
